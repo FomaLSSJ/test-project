@@ -35,25 +35,32 @@ let service = {
     model: UserModel,
     methods: {
         increment: (id, score) => {
-            return UserModel.findOneAndUpdate({id: id}, {$inc: {score: score}})
+            return UserModel.findOneAndUpdate({id: id}, {$inc: {score: score}}, {new: true})
                 .then(result => {
-                    if (result) return true;
-                    return UserModel.create({id: id, score: score}).then(model => true);
-                });
+                    if (result) return result;
+                    return UserModel.create({id: id, score: score});
+                })
+                .then(model => {
+                    return {id: model.id, score: model.score};
+                })
+                .catch(err => err);
         },
         rank: (id) => {
+            if (_.isEmpty(id)) return null;
+
             return UserModel.findOne({id: id})
                 .then(user => {
                     if (user) {
                         return UserModel.aggregate([
                                 {$match: {group: user.group}},
-                                {$group: {_id: {score: {$sum: '$score'}}}},
-                                {$sort: {score: -1}}
+                                {$group: {_id: {score: {$sum: '$score'}}}}
                             ])
                             .then(result => {
                                 let place = null;
+                                result = _.reverse(_.sortBy(_.map(result, '_id.score')));
+
                                 result.forEach((item, index) => {
-                                    if (user.score === item._id.score) {
+                                    if (user.score === item) {
                                         place = index + 1;
                                         return false;
                                     }

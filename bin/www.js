@@ -1,6 +1,8 @@
+require('dotenv').config();
+
 let http = require('http'),
     app = require('../app'),
-    port = (process.env.NODE_PORT || 8000);
+    port = (process.env.NODE_PORT || 3000);
 
 app.set(port);
 

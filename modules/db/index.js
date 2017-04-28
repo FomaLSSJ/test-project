@@ -1,19 +1,22 @@
-let mongoose = require('mongoose');
+let mongoose = require('mongoose'),
+    host = process.env.MONGO_HOST || 'localhost',
+    port = process.env.MONGO_PORT || '27017',
+    database = process.env.MONGO_DB || 'test';
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect('mongodb://localhost:27017/service', {}, err => {
+mongoose.connect(`mongodb://${host}:${port}/${database}`, {}, err => {
     if (err) {
         console.error(err);
         return process.exit(1);
     }
 
-    return require('../../models/Counter').methods.findOrCreate();
+    if (database !== 'test') return require('../../models/Counter').methods.findOrCreate();
 });
 
 let db = mongoose.connection;
 
-db.on('error', err => console.log('Connection error: ', err.message));
-db.once('open', () => console.log('Connected to DB'));
+db.on('error', err => console.log('Connection error:', err.message));
+db.once('open', () => console.log('Connected to DB:', database));
 
 module.exports = mongoose;
