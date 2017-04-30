@@ -23,5 +23,5 @@ MONGO_DB=development
 
 # Запуск
 
-- Запуск тестов ```npm test``` или ```npm t```
-- Запуск сервера ```npm start```
+- Запуск тестов ```npm test``` или ```npm t```.
+- Запуск сервера ```npm start```.
