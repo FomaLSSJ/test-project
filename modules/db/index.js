@@ -16,7 +16,13 @@ mongoose.connect(`mongodb://${host}:${port}/${database}`, {}, err => {
 
 let db = mongoose.connection;
 
-db.on('error', err => console.log('Connection error:', err.message));
-db.once('open', () => console.log('Connected to DB:', database));
+db.on('error', err => {
+    return console.error('Connection error:', err.message);
+});
+db.once('open', () => {
+    if (database !== 'test') {
+        return console.log('Connected to DB:', database);
+    }
+});
 
 module.exports = mongoose;
